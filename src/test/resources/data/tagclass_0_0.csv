@@ -1,0 +1,11 @@
+id|name|url|
+349|OfficeHolder|http://dbpedia.org/ontology/OfficeHolder|
+211|Person|http://dbpedia.org/ontology/Person|
+239|Agent|http://dbpedia.org/ontology/Agent|
+0|Thing|http://www.w3.org/2002/07/owl#Thing|
+98|Monarch|http://dbpedia.org/ontology/Monarch|
+336|BritishRoyalty|http://dbpedia.org/ontology/BritishRoyalty|
+155|Royalty|http://dbpedia.org/ontology/Royalty|
+193|Saint|http://dbpedia.org/ontology/Saint|
+109|Cleric|http://dbpedia.org/ontology/Cleric|
+82|Philosopher|http://dbpedia.org/ontology/Philosopher|
