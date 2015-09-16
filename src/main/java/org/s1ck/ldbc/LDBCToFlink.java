@@ -1,13 +1,13 @@
 package org.s1ck.ldbc;
 
-import com.google.common.collect.Iterables;
 import org.apache.flink.api.common.functions.CoGroupFunction;
 import org.apache.flink.api.common.functions.GroupReduceFunction;
 import org.apache.flink.api.common.functions.MapFunction;
-import org.apache.flink.api.common.functions.RichMapPartitionFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.api.java.utils.DataSetUtils;
+import org.apache.flink.hadoop.shaded.com.google.common.collect.Iterables;
 import org.apache.flink.hadoop.shaded.com.google.common.collect.Lists;
 import org.apache.flink.hadoop.shaded.com.google.common.collect.Maps;
 import org.apache.flink.util.Collector;
@@ -16,11 +16,9 @@ import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
-import org.s1ck.ldbc.LDBCConstants.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -35,6 +33,8 @@ public class LDBCToFlink {
   private static final Logger LOG = Logger.getLogger(LDBCToFlink.class);
 
   private final ExecutionEnvironment env;
+
+  private final Configuration conf;
 
   private final String ldbcDirectory;
 
@@ -51,11 +51,17 @@ public class LDBCToFlink {
   private long nextVertexClassID = 0L;
 
   public LDBCToFlink(String ldbcDirectory, ExecutionEnvironment env) {
+    this(ldbcDirectory, env, new Configuration());
+  }
+
+  public LDBCToFlink(String ldbcDirectory, ExecutionEnvironment env,
+    Configuration conf) {
     this.ldbcDirectory = ldbcDirectory;
     this.vertexFilePaths = Lists.newArrayList();
     this.edgeFilePaths = Lists.newArrayList();
     this.propertyFilePaths = Lists.newArrayList();
     this.env = env;
+    this.conf = conf;
     this.vertexClassToClassIDMap = Maps.newHashMap();
     fileNameDelimiter = Pattern.compile(FILENAME_TOKEN_DELIMITER);
     init();
@@ -109,7 +115,7 @@ public class LDBCToFlink {
       edgeDataSets.add(readEdgeFile(filePath));
     }
 
-    return zipWithUniqueId(unionDataSets(edgeDataSets))
+    return DataSetUtils.zipWithUniqueId(unionDataSets(edgeDataSets))
       .map(new MapFunction<Tuple2<Long, LDBCEdge>, LDBCEdge>() {
         @Override
         public LDBCEdge map(Tuple2<Long, LDBCEdge> tuple) throws Exception {
@@ -378,16 +384,16 @@ public class LDBCToFlink {
 
   private void initFromHDFS() {
     try {
-      FileSystem fs = FileSystem.get(new Configuration());
+      FileSystem fs = FileSystem.get(conf);
       FileStatus[] fileStates = fs.listStatus(new Path(ldbcDirectory));
       for (FileStatus fileStatus : fileStates) {
         String filePath = fileStatus.getPath().getName();
         if (isVertexFile(filePath)) {
-          vertexFilePaths.add(filePath);
+          vertexFilePaths.add(ldbcDirectory + filePath);
         } else if (isEdgeFile(filePath)) {
-          edgeFilePaths.add(filePath);
+          edgeFilePaths.add(ldbcDirectory + filePath);
         } else if (isPropertyFile(filePath)) {
-          propertyFilePaths.add(filePath);
+          propertyFilePaths.add(ldbcDirectory + filePath);
         }
       }
     } catch (IOException e) {
@@ -456,59 +462,5 @@ public class LDBCToFlink {
       }
       collector.collect(finalVertex);
     }
-  }
-
-  /**
-   * Taken from Flink source code.
-   *
-   * @param input dataset
-   * @param <T>   dataset element type
-   * @return unique id for each dataset element
-   * @TODO Replace when [FLINK-2590] is fixed.
-   */
-  public static <T> DataSet<Tuple2<Long, T>> zipWithUniqueId(DataSet<T> input) {
-    return input
-      .mapPartition(new RichMapPartitionFunction<T, Tuple2<Long, T>>() {
-
-        long shifter = 0L;
-        long start = 0L;
-        long taskId = 0L;
-        long label = 0L;
-        long upperShiftBound = log2(Long.MAX_VALUE);
-
-        public void open(
-          org.apache.flink.configuration.Configuration parameters) throws
-          Exception {
-          super.open(parameters);
-          this.shifter = (long) log2(
-            (long) this.getRuntimeContext().getNumberOfParallelSubtasks());
-          this.taskId = (long) this.getRuntimeContext().getIndexOfThisSubtask();
-        }
-
-        public void mapPartition(Iterable<T> values,
-          Collector<Tuple2<Long, T>> out) throws Exception {
-          for (Iterator<T> i$ = values.iterator(); i$.hasNext(); ++this.start) {
-            T value = i$.next();
-            this.label = (this.start << this.shifter) + this.taskId;
-            if ((long) log2(this.start) + this.shifter >= upperShiftBound) {
-              throw new Exception(
-                "Exceeded Long value range while generating labels");
-            }
-            out.collect(new Tuple2<>(this.label, value));
-          }
-
-        }
-      });
-  }
-
-  /**
-   * Taken from Flink source code.
-   *
-   * @TODO Replace when [FLINK-2590] is fixed.
-   */
-  public static int log2(long value) {
-    return value > 2147483647L ?
-      64 - Integer.numberOfLeadingZeros((int) (value >> 32)) :
-      32 - Integer.numberOfLeadingZeros((int) value);
   }
 }
