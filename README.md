@@ -43,3 +43,7 @@ LDBCToFlink ldbcToFlink = new LDBCToFlink(
 DataSet<LDBCVertex> vertices = ldbcToFlink.getVertices();
 DataSet<LDBCEdge> edges = ldbcToFlink.getEdges();
 ```
+
+### License
+
+Licensed under the GNU General Public License, v3: http://www.gnu.org/licenses/gpl-3.0.html
