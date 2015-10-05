@@ -14,12 +14,21 @@
  * along with ldbc-flink-import. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.s1ck.ldbc;
+package org.s1ck.ldbc.tuples;
 
 import org.apache.flink.api.java.tuple.Tuple5;
 
 import java.util.Map;
 
+/**
+ * Represents an LDBC edge.
+ *
+ * f0: edge identifier
+ * f1: edge label
+ * f2: source vertex id
+ * f3: target vertex id
+ * f4: edge properties
+ */
 public class LDBCEdge extends
   Tuple5<Long, String, Long, Long, Map<String, Object>> {
 

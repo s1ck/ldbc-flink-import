@@ -14,10 +14,11 @@
  * along with ldbc-flink-import. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.s1ck.ldbc;
+package org.s1ck.ldbc.functions;
 
 import org.apache.flink.util.Collector;
 import org.s1ck.ldbc.LDBCConstants.FieldType;
+import org.s1ck.ldbc.tuples.LDBCVertex;
 
 public class LDBCVertexLineReader extends LDBCLineReader<LDBCVertex> {
 

@@ -32,6 +32,13 @@ import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
+import org.s1ck.ldbc.functions.LDBCEdgeLineReader;
+import org.s1ck.ldbc.functions.LDBCPropertyLineReader;
+import org.s1ck.ldbc.functions.LDBCVertexLineReader;
+import org.s1ck.ldbc.tuples.LDBCEdge;
+import org.s1ck.ldbc.tuples.LDBCProperty;
+import org.s1ck.ldbc.tuples.LDBCMultiValuedProperty;
+import org.s1ck.ldbc.tuples.LDBCVertex;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,32 +48,65 @@ import java.util.regex.Pattern;
 
 import static org.s1ck.ldbc.LDBCConstants.*;
 
+/**
+ * Main class to read LDBC output into Flink.
+ */
 public class LDBCToFlink {
 
+  /** Logger */
   private static final Logger LOG = Logger.getLogger(LDBCToFlink.class);
 
+  /** Flink execution environment */
   private final ExecutionEnvironment env;
 
+  /** Hadoop Configuration */
   private final Configuration conf;
 
+  /** Directory, where the LDBC output is stored. */
   private final String ldbcDirectory;
 
-  private final Pattern fileNameDelimiter;
+  /**
+   * Defines how tokens are separated in a filename. For example in
+   * "comment_0_0.csv" the tokens are separated by "_".
+   */
+  private final Pattern fileNameTokenDelimiter;
 
+  /** List of vertex files */
   private final List<String> vertexFilePaths;
 
+  /** List of edge files */
   private final List<String> edgeFilePaths;
 
+  /** List of property files */
   private final List<String> propertyFilePaths;
 
+  /**
+   * Maps a vertex class (e.g. Person, Comment) to a unique identifier.
+   */
   private final Map<String, Long> vertexClassToClassIDMap;
 
+  /**
+   * Used to create vertex class IDs.
+   */
   private long nextVertexClassID = 0L;
 
+  /**
+   * Creates a new parser instance.
+   *
+   * @param ldbcDirectory path to LDBC output
+   * @param env Flink execution environment
+   */
   public LDBCToFlink(String ldbcDirectory, ExecutionEnvironment env) {
     this(ldbcDirectory, env, new Configuration());
   }
 
+  /**
+   * Creates a new parser instance.
+   *
+   * @param ldbcDirectory path to LDBC output
+   * @param env Flink execution environment
+   * @param conf Hadoop cluster configuration
+   */
   public LDBCToFlink(String ldbcDirectory, ExecutionEnvironment env,
     Configuration conf) {
     this.ldbcDirectory = ldbcDirectory;
@@ -76,22 +116,15 @@ public class LDBCToFlink {
     this.env = env;
     this.conf = conf;
     this.vertexClassToClassIDMap = Maps.newHashMap();
-    fileNameDelimiter = Pattern.compile(FILENAME_TOKEN_DELIMITER);
+    fileNameTokenDelimiter = Pattern.compile(FILENAME_TOKEN_DELIMITER);
     init();
   }
 
-  public List<String> getVertexFilePaths() {
-    return vertexFilePaths;
-  }
-
-  public List<String> getEdgeFilePaths() {
-    return edgeFilePaths;
-  }
-
-  public List<String> getPropertyFilePaths() {
-    return propertyFilePaths;
-  }
-
+  /**
+   * Parses and transforms the LDBC vertex files to {@link LDBCVertex} tuples.
+   *
+   * @return DataSet containing all vertices in the LDBC graph
+   */
   public DataSet<LDBCVertex> getVertices() {
     LOG.info("Reading vertices");
     final List<DataSet<LDBCVertex>> vertexDataSets =
@@ -107,19 +140,11 @@ public class LDBCToFlink {
     return vertices;
   }
 
-  private DataSet<LDBCVertex> addMultiValuePropertiesToVertices(
-    DataSet<LDBCVertex> vertices) {
-    DataSet<LDBCPropertyGroup> groupedProperties = getProperties()
-      // group properties by vertex id and property key
-      .groupBy(0, 1)
-        // and build tuples containing vertex id, property key and value list
-      .reduceGroup(new PropertyValueGroupReducer());
-
-    // co group vertices and property groups and update vertices
-    return vertices.coGroup(groupedProperties).where(0).equalTo(0)
-      .with(new VertexPropertyGroupCoGroupReducer());
-  }
-
+  /**
+   * Parses and transforms the LDBC edge files to {@link LDBCEdge} tuples.
+   *
+   * @return DataSet containing all edges in the LDBC graph.
+   */
   public DataSet<LDBCEdge> getEdges() {
     LOG.info("Reading edges");
     List<DataSet<LDBCEdge>> edgeDataSets =
@@ -136,6 +161,19 @@ public class LDBCToFlink {
           return tuple.f1;
         }
       }).withForwardedFields("f0");
+  }
+
+  private DataSet<LDBCVertex> addMultiValuePropertiesToVertices(
+    DataSet<LDBCVertex> vertices) {
+    DataSet<LDBCMultiValuedProperty> groupedProperties = getProperties()
+      // group properties by vertex id and property key
+      .groupBy(0, 1)
+        // and build tuples containing vertex id, property key and value list
+      .reduceGroup(new PropertyValueGroupReducer());
+
+    // co group vertices and property groups and update vertices
+    return vertices.coGroup(groupedProperties).where(0).equalTo(0)
+      .with(new VertexPropertyGroupCoGroupReducer());
   }
 
   private DataSet<LDBCProperty> getProperties() {
@@ -340,19 +378,19 @@ public class LDBCToFlink {
   }
 
   private String getEdgeClass(String fileName) {
-    return fileNameDelimiter.split(fileName)[1];
+    return fileNameTokenDelimiter.split(fileName)[1];
   }
 
   private String getPropertyClass(String fileName) {
-    return fileNameDelimiter.split(fileName)[1];
+    return fileNameTokenDelimiter.split(fileName)[1];
   }
 
   private String getSourceVertexClass(String fileName) {
-    return fileNameDelimiter.split(fileName)[0];
+    return fileNameTokenDelimiter.split(fileName)[0];
   }
 
   private String getTargetVertexClass(String fileName) {
-    return fileNameDelimiter.split(fileName)[2];
+    return fileNameTokenDelimiter.split(fileName)[2];
   }
 
   private boolean isVertexFile(String fileName) {
@@ -428,16 +466,16 @@ public class LDBCToFlink {
   }
 
   private static class PropertyValueGroupReducer implements
-    GroupReduceFunction<LDBCProperty, LDBCPropertyGroup> {
-    private final LDBCPropertyGroup reusePropertyGroup;
+    GroupReduceFunction<LDBCProperty, LDBCMultiValuedProperty> {
+    private final LDBCMultiValuedProperty reusePropertyGroup;
 
     public PropertyValueGroupReducer() {
-      reusePropertyGroup = new LDBCPropertyGroup();
+      reusePropertyGroup = new LDBCMultiValuedProperty();
     }
 
     @Override
     public void reduce(Iterable<LDBCProperty> iterable,
-      Collector<LDBCPropertyGroup> collector) throws Exception {
+      Collector<LDBCMultiValuedProperty> collector) throws Exception {
       Long vertexId = null;
       String propertyKey = null;
       boolean first = true;
@@ -458,16 +496,16 @@ public class LDBCToFlink {
   }
 
   private static class VertexPropertyGroupCoGroupReducer implements
-    CoGroupFunction<LDBCVertex, LDBCPropertyGroup, LDBCVertex> {
+    CoGroupFunction<LDBCVertex, LDBCMultiValuedProperty, LDBCVertex> {
 
     @Override
     public void coGroup(Iterable<LDBCVertex> ldbcVertices,
-      Iterable<LDBCPropertyGroup> ldbcPropertyGroups,
+      Iterable<LDBCMultiValuedProperty> ldbcPropertyGroups,
       Collector<LDBCVertex> collector) throws Exception {
       // there is only one vertex in the iterable
       LDBCVertex finalVertex = Iterables.get(ldbcVertices, 0);
       // add multi value property to the vertex (if any)
-      for (LDBCPropertyGroup propertyGroup : ldbcPropertyGroups) {
+      for (LDBCMultiValuedProperty propertyGroup : ldbcPropertyGroups) {
         finalVertex.getProperties().put(
           propertyGroup.getPropertyKey(),
           propertyGroup.getPropertyValues()

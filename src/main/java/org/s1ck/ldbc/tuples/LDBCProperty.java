@@ -14,13 +14,19 @@
  * along with ldbc-flink-import. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.s1ck.ldbc;
+package org.s1ck.ldbc.tuples;
 
 import org.apache.flink.api.java.tuple.Tuple3;
 
-import java.util.List;
-
-public class LDBCPropertyGroup extends Tuple3<Long, String, List<Object>> {
+/**
+ * Represents a key-value pair which is associated to a multi-valued property
+ * (e.g. email).
+ *
+ * f0: vertex id which owns the property
+ * f1: property key
+ * f2: property value
+ */
+public class LDBCProperty extends Tuple3<Long, String, Object> {
   public Long getVertexId() {
     return f0;
   }
@@ -37,11 +43,11 @@ public class LDBCPropertyGroup extends Tuple3<Long, String, List<Object>> {
     f1 = propertyKey;
   }
 
-  public List<Object> getPropertyValues() {
+  public Object getPropertyValue() {
     return f2;
   }
 
-  public void setPropertValues(List<Object> propertyValues) {
-    f2 = propertyValues;
+  public void setPropertyValue(Object propertyValue) {
+    f2 = propertyValue;
   }
 }

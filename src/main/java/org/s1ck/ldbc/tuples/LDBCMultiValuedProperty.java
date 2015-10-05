@@ -14,11 +14,22 @@
  * along with ldbc-flink-import. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.s1ck.ldbc;
+package org.s1ck.ldbc.tuples;
 
 import org.apache.flink.api.java.tuple.Tuple3;
 
-public class LDBCProperty extends Tuple3<Long, String, Object> {
+import java.util.List;
+
+/**
+ * Represents a multi-valued LDBC property (e.g. email).
+ *
+ * Multi-values properties occur on vertices exclusively.
+ *
+ * f0: vertex id which owns the property
+ * f1: property key
+ * f2: list of property values
+ */
+public class LDBCMultiValuedProperty extends Tuple3<Long, String, List<Object>> {
   public Long getVertexId() {
     return f0;
   }
@@ -35,11 +46,11 @@ public class LDBCProperty extends Tuple3<Long, String, Object> {
     f1 = propertyKey;
   }
 
-  public Object getPropertyValue() {
+  public List<Object> getPropertyValues() {
     return f2;
   }
 
-  public void setPropertyValue(Object propertyValue) {
-    f2 = propertyValue;
+  public void setPropertValues(List<Object> propertyValues) {
+    f2 = propertyValues;
   }
 }

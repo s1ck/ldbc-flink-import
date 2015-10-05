@@ -14,10 +14,11 @@
  * along with ldbc-flink-import. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.s1ck.ldbc;
+package org.s1ck.ldbc.functions;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.shaded.com.google.common.collect.Maps;
+import org.s1ck.ldbc.LDBCConstants;
 import org.s1ck.ldbc.LDBCConstants.FieldType;
 
 import java.text.ParseException;

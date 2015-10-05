@@ -14,12 +14,19 @@
  * along with ldbc-flink-import. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.s1ck.ldbc;
+package org.s1ck.ldbc.tuples;
 
 import org.apache.flink.api.java.tuple.Tuple3;
 
 import java.util.Map;
 
+/**
+ * Represents an LDBC vertex.
+ *
+ * f0: vertex identifier
+ * f1: vertex label
+ * f2: vertex properties
+ */
 public class LDBCVertex extends Tuple3<Long, String, Map<String, Object>> {
 
   public Long getVertexId() {

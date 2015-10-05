@@ -16,6 +16,9 @@
 
 package org.s1ck.ldbc;
 
+/**
+ * Constants that are used to parse LDBC output.
+ */
 public class LDBCConstants {
 
   public static final String FILENAME_TOKEN_DELIMITER = "_";

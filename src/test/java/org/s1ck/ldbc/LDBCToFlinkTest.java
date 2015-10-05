@@ -5,12 +5,11 @@ import org.apache.flink.api.java.io.LocalCollectionOutputFormat;
 import org.apache.flink.hadoop.shaded.com.google.common.collect.Lists;
 import org.junit.Assert;
 import org.junit.Test;
+import org.s1ck.ldbc.tuples.LDBCEdge;
+import org.s1ck.ldbc.tuples.LDBCVertex;
 
 import java.util.List;
 
-/**
- * Copyright 2015 martin.
- */
 public class LDBCToFlinkTest {
 
   @Test
@@ -23,18 +22,6 @@ public class LDBCToFlinkTest {
 
   protected void performTest(ExecutionEnvironment env, LDBCToFlink ldbcToFlink)
     throws Exception {
-    System.out.println("Vertex file paths");
-    for (String file : ldbcToFlink.getVertexFilePaths()) {
-      System.out.println(file);
-    }
-    System.out.println("Edge file paths");
-    for (String file : ldbcToFlink.getEdgeFilePaths()) {
-      System.out.println(file);
-    }
-    System.out.println("Property file paths");
-    for (String file : ldbcToFlink.getPropertyFilePaths()) {
-      System.out.println(file);
-    }
 
     List<LDBCVertex> vertexList = Lists.newArrayList();
     List<LDBCEdge> edgeList = Lists.newArrayList();

@@ -15,9 +15,6 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 
-/**
- * Created by s1ck on 16.09.15.
- */
 public class LDBCToFlinkHDFSTest extends LDBCToFlinkTest {
 
   @Rule
