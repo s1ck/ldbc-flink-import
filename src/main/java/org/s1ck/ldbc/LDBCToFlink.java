@@ -16,28 +16,26 @@
 
 package org.s1ck.ldbc;
 
-import org.apache.flink.api.common.functions.CoGroupFunction;
-import org.apache.flink.api.common.functions.GroupReduceFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.utils.DataSetUtils;
-import org.apache.flink.hadoop.shaded.com.google.common.collect.Iterables;
 import org.apache.flink.hadoop.shaded.com.google.common.collect.Lists;
 import org.apache.flink.hadoop.shaded.com.google.common.collect.Maps;
-import org.apache.flink.util.Collector;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
-import org.s1ck.ldbc.functions.LDBCEdgeLineReader;
-import org.s1ck.ldbc.functions.LDBCPropertyLineReader;
-import org.s1ck.ldbc.functions.LDBCVertexLineReader;
+import org.s1ck.ldbc.functions.EdgeLineReader;
+import org.s1ck.ldbc.functions.PropertyLineReader;
+import org.s1ck.ldbc.functions.PropertyValueGroupReducer;
+import org.s1ck.ldbc.functions.VertexLineReader;
+import org.s1ck.ldbc.functions.VertexPropertyGroupCoGroupReducer;
 import org.s1ck.ldbc.tuples.LDBCEdge;
-import org.s1ck.ldbc.tuples.LDBCProperty;
 import org.s1ck.ldbc.tuples.LDBCMultiValuedProperty;
+import org.s1ck.ldbc.tuples.LDBCProperty;
 import org.s1ck.ldbc.tuples.LDBCVertex;
 
 import java.io.File;
@@ -49,7 +47,7 @@ import java.util.regex.Pattern;
 import static org.s1ck.ldbc.LDBCConstants.*;
 
 /**
- * Main class to read LDBC output into Flink.
+ * Main class to read LDBC output into Apache Flink.
  */
 public class LDBCToFlink {
 
@@ -253,7 +251,7 @@ public class LDBCToFlink {
       break;
     }
     return env.readTextFile(filePath, "UTF-8").flatMap(
-      new LDBCVertexLineReader(vertexClassID, vertexClass, vertexClassFields,
+      new VertexLineReader(vertexClassID, vertexClass, vertexClassFields,
         vertexClassFieldTypes, classCount));
   }
 
@@ -334,7 +332,7 @@ public class LDBCToFlink {
     }
 
     return env.readTextFile(filePath, "UTF-8").flatMap(
-      new LDBCEdgeLineReader(edgeClass, edgeClassFields, edgeClassFieldTypes,
+      new EdgeLineReader(edgeClass, edgeClassFields, edgeClassFieldTypes,
         sourceVertexClassId, sourceVertexClass, targetVertexClassId,
         targetVertexClass, vertexClassCount));
   }
@@ -363,7 +361,7 @@ public class LDBCToFlink {
     }
 
     return env.readTextFile(filePath, "UTF-8").flatMap(
-      new LDBCPropertyLineReader(propertyClass, propertyClassFields,
+      new PropertyLineReader(propertyClass, propertyClassFields,
         propertyClassFieldTypes, vertexClass, vertexClassId, vertexClassCount));
   }
 
@@ -462,56 +460,6 @@ public class LDBCToFlink {
       } else if (isPropertyFile(fileEntry.getName())) {
         propertyFilePaths.add(fileEntry.getAbsolutePath());
       }
-    }
-  }
-
-  private static class PropertyValueGroupReducer implements
-    GroupReduceFunction<LDBCProperty, LDBCMultiValuedProperty> {
-    private final LDBCMultiValuedProperty reusePropertyGroup;
-
-    public PropertyValueGroupReducer() {
-      reusePropertyGroup = new LDBCMultiValuedProperty();
-    }
-
-    @Override
-    public void reduce(Iterable<LDBCProperty> iterable,
-      Collector<LDBCMultiValuedProperty> collector) throws Exception {
-      Long vertexId = null;
-      String propertyKey = null;
-      boolean first = true;
-      List<Object> propertyList = Lists.newArrayList();
-      for (LDBCProperty ldbcProperty : iterable) {
-        if (first) {
-          vertexId = ldbcProperty.getVertexId();
-          propertyKey = ldbcProperty.getPropertyKey();
-          first = false;
-        }
-        propertyList.add(ldbcProperty.getPropertyValue());
-      }
-      reusePropertyGroup.setVertexId(vertexId);
-      reusePropertyGroup.setPropertyKey(propertyKey);
-      reusePropertyGroup.setPropertValues(propertyList);
-      collector.collect(reusePropertyGroup);
-    }
-  }
-
-  private static class VertexPropertyGroupCoGroupReducer implements
-    CoGroupFunction<LDBCVertex, LDBCMultiValuedProperty, LDBCVertex> {
-
-    @Override
-    public void coGroup(Iterable<LDBCVertex> ldbcVertices,
-      Iterable<LDBCMultiValuedProperty> ldbcPropertyGroups,
-      Collector<LDBCVertex> collector) throws Exception {
-      // there is only one vertex in the iterable
-      LDBCVertex finalVertex = Iterables.get(ldbcVertices, 0);
-      // add multi value property to the vertex (if any)
-      for (LDBCMultiValuedProperty propertyGroup : ldbcPropertyGroups) {
-        finalVertex.getProperties().put(
-          propertyGroup.getPropertyKey(),
-          propertyGroup.getPropertyValues()
-        );
-      }
-      collector.collect(finalVertex);
     }
   }
 }

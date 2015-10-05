@@ -20,7 +20,10 @@ import org.apache.flink.util.Collector;
 import org.s1ck.ldbc.LDBCConstants.FieldType;
 import org.s1ck.ldbc.tuples.LDBCEdge;
 
-public class LDBCEdgeLineReader extends LDBCLineReader<LDBCEdge> {
+/**
+ * Creates a {@link LDBCEdge} from an input line.
+ */
+public class EdgeLineReader extends LineReader<LDBCEdge> {
 
   private final Long sourceVertexClassId;
   private final String sourceVertexClass;
@@ -28,7 +31,7 @@ public class LDBCEdgeLineReader extends LDBCLineReader<LDBCEdge> {
   private final String targetVertexClass;
   private final LDBCEdge reuseEdge;
 
-  public LDBCEdgeLineReader(String edgeClassLabel, String[] edgeClassFields,
+  public EdgeLineReader(String edgeClassLabel, String[] edgeClassFields,
     FieldType[] edgeClassFieldTypes, Long sourceVertexClassId,
     String sourceVertexClass, Long targetVertexClassId,
     String targetVertexClass, Long vertexClassCount) {
@@ -44,24 +47,20 @@ public class LDBCEdgeLineReader extends LDBCLineReader<LDBCEdge> {
   @Override
   public void flatMap(String line, Collector<LDBCEdge> collector) throws
     Exception {
-    if (isHeaderLine(line, sourceVertexClass)) {
-      return;
-    }
-
-    String[] fieldValues = getFieldValues(line);
-    Long sourceVertexId = getSourceVertexId(fieldValues);
-    Long targetVertexId = getTargetVertexId(fieldValues);
-    Long uniqueSourceVertexId =
-      getUniqueID(sourceVertexId, sourceVertexClassId, getVertexClassCount());
-    Long uniqueTargetVertexId =
-      getUniqueID(targetVertexId, targetVertexClassId, getVertexClassCount());
-    reuseEdge.setEdgeId(0L);
-    reuseEdge.setSourceVertexId(uniqueSourceVertexId);
-    reuseEdge.setTargetVertexId(uniqueTargetVertexId);
-    reuseEdge.setLabel(getClassLabel(fieldValues));
-    reuseEdge.setProperties(getEdgeProperties(fieldValues));
-    collector.collect(reuseEdge);
-    reset();
+    try {
+      String[] fieldValues = getFieldValues(line);
+      Long sourceVertexId = getSourceVertexId(fieldValues);
+      Long targetVertexId = getTargetVertexId(fieldValues);
+      Long uniqueSourceVertexId = getUniqueID(sourceVertexId, sourceVertexClassId, getVertexClassCount());
+      Long uniqueTargetVertexId = getUniqueID(targetVertexId, targetVertexClassId, getVertexClassCount());
+      reuseEdge.setEdgeId(0L);
+      reuseEdge.setSourceVertexId(uniqueSourceVertexId);
+      reuseEdge.setTargetVertexId(uniqueTargetVertexId);
+      reuseEdge.setLabel(getClassLabel(fieldValues));
+      reuseEdge.setProperties(getEdgeProperties(fieldValues));
+      collector.collect(reuseEdge);
+      reset();
+    } catch (NumberFormatException ignored) { }
   }
 
   private Long getSourceVertexId(String[] fieldValues) {

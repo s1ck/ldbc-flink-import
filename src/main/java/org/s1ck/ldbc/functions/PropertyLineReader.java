@@ -21,12 +21,15 @@ import org.s1ck.ldbc.tuples.LDBCProperty;
 
 import static org.s1ck.ldbc.LDBCConstants.FieldType;
 
-public class LDBCPropertyLineReader extends LDBCLineReader<LDBCProperty> {
+/**
+ * Creates a {@link LDBCProperty} from an input line.
+ */
+public class PropertyLineReader extends LineReader<LDBCProperty> {
   private final String vertexClass;
   private final Long vertexClassId;
   private final LDBCProperty reuseProperty;
 
-  public LDBCPropertyLineReader(String propertyClassLabel,
+  public PropertyLineReader(String propertyClassLabel,
     String[] propertyClassFields, FieldType[] propertyClassFieldTypes,
     String vertexClass, Long vertexClassId, Long vertexClassCount) {
     super(propertyClassLabel, propertyClassFields, propertyClassFieldTypes,
@@ -40,17 +43,15 @@ public class LDBCPropertyLineReader extends LDBCLineReader<LDBCProperty> {
   @Override
   public void flatMap(String line, Collector<LDBCProperty> collector) throws
     Exception {
-    if (isHeaderLine(line, vertexClass)) {
-      return;
-    }
-    String[] fieldValues = getFieldValues(line);
-    Long vertexId = getVertexId(fieldValues);
-    Long uniqueVertexId =
-      getUniqueID(vertexId, vertexClassId, getVertexClassCount());
-    reuseProperty.setVertexId(uniqueVertexId);
-    reuseProperty.setPropertyValue(getPropertyValue(fieldValues));
-    collector.collect(reuseProperty);
-    reset();
+   try {
+     String[] fieldValues = getFieldValues(line);
+     Long vertexId = getVertexId(fieldValues);
+     Long uniqueVertexId = getUniqueID(vertexId, vertexClassId, getVertexClassCount());
+     reuseProperty.setVertexId(uniqueVertexId);
+     reuseProperty.setPropertyValue(getPropertyValue(fieldValues));
+     collector.collect(reuseProperty);
+     reset();
+   } catch (NumberFormatException ignored) { }
   }
 
   private Long getVertexId(String[] fieldValues) {

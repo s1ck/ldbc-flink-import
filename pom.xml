@@ -16,7 +16,7 @@
         <dep.flink.version>0.10-SNAPSHOT</dep.flink.version>
         <dep.hadoop.version>2.2.0</dep.hadoop.version>
         <dep.junit.version>4.12</dep.junit.version>
-        <dep.log4j.version>2.1</dep.log4j.version>
+        <dep.log4j.version>1.2.17</dep.log4j.version>
     </properties>
 
     <repositories>
@@ -53,7 +53,7 @@
 
         <!-- Misc -->
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
+            <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>${dep.log4j.version}</version>
         </dependency>

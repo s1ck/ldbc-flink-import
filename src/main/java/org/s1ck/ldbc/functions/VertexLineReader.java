@@ -20,12 +20,15 @@ import org.apache.flink.util.Collector;
 import org.s1ck.ldbc.LDBCConstants.FieldType;
 import org.s1ck.ldbc.tuples.LDBCVertex;
 
-public class LDBCVertexLineReader extends LDBCLineReader<LDBCVertex> {
+/**
+ * Creates a {@link LDBCVertex} from an input line.
+ */
+public class VertexLineReader extends LineReader<LDBCVertex> {
 
   private final Long vertexClassID;
   private final LDBCVertex reuseVertex;
 
-  public LDBCVertexLineReader(Long vertexClassId, String vertexClass,
+  public VertexLineReader(Long vertexClassId, String vertexClass,
     String[] vertexClassFields, FieldType[] vertexClassFieldTypes,
     Long vertexClassCount) {
     super(vertexClass, vertexClassFields, vertexClassFieldTypes,
@@ -37,18 +40,16 @@ public class LDBCVertexLineReader extends LDBCLineReader<LDBCVertex> {
   @Override
   public void flatMap(String line, Collector<LDBCVertex> collector) throws
     Exception {
-    if (isHeaderLine(line)) {
-      return;
-    }
-    String[] fieldValues = getFieldValues(line);
-    Long vertexID = getVertexID(fieldValues);
-    Long uniqueVertexID =
-      getUniqueID(vertexID, vertexClassID, getVertexClassCount());
-    reuseVertex.setVertexId(uniqueVertexID);
-    reuseVertex.setLabel(getClassLabel(fieldValues));
-    reuseVertex.setProperties(getVertexProperties(fieldValues));
-    collector.collect(reuseVertex);
-    reset();
+    try {
+      String[] fieldValues = getFieldValues(line);
+      Long vertexID = getVertexID(fieldValues);
+      Long uniqueVertexID = getUniqueID(vertexID, vertexClassID, getVertexClassCount());
+      reuseVertex.setVertexId(uniqueVertexID);
+      reuseVertex.setLabel(getClassLabel(fieldValues));
+      reuseVertex.setProperties(getVertexProperties(fieldValues));
+      collector.collect(reuseVertex);
+      reset();
+    } catch (NumberFormatException ignored) { }
   }
 
   private Long getVertexID(String[] fieldValues) {

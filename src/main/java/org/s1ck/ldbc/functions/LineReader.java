@@ -29,7 +29,15 @@ import java.util.regex.Pattern;
 
 import static org.s1ck.ldbc.LDBCConstants.TYPE_DISCRIMINATOR_FIELD;
 
-public abstract class LDBCLineReader<OUT> implements
+/**
+ * Abstract base class for all line readers.
+ *
+ * @param <OUT> LDBC entity
+ * @see VertexLineReader
+ * @see EdgeLineReader
+ * @see PropertyLineReader
+ */
+public abstract class LineReader<OUT> implements
   FlatMapFunction<String, OUT> {
 
   private final static int LOG2_LONG_MAX_VALUE = log2(Long.MAX_VALUE);
@@ -52,9 +60,7 @@ public abstract class LDBCLineReader<OUT> implements
 
   private String classLabel;
 
-  private boolean firstLine;
-
-  public LDBCLineReader(String classLabel, String[] classFields,
+  public LineReader(String classLabel, String[] classFields,
     FieldType[] classFieldTypes, Long vertexClassCount) {
     this.classLabel = classLabel;
     this.classFields = classFields;
@@ -63,7 +69,6 @@ public abstract class LDBCLineReader<OUT> implements
 
     fieldDelimiterPattern = Pattern.compile(LDBCConstants.FIELD_DELIMITER);
     reuseMap = Maps.newHashMapWithExpectedSize(classFields.length);
-    firstLine = true;
     dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
     dateTimeFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
     dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -83,18 +88,6 @@ public abstract class LDBCLineReader<OUT> implements
 
   protected Long getVertexClassCount() {
     return vertexClassCount;
-  }
-
-  protected boolean isHeaderLine(String line) {
-    return isHeaderLine(line, classFields[0]);
-  }
-
-  protected boolean isHeaderLine(String line, String prefix) {
-    if (firstLine) {
-      firstLine = false;
-      return line.toLowerCase().startsWith(prefix.toLowerCase());
-    }
-    return false;
   }
 
   protected String[] getFieldValues(String line) {
