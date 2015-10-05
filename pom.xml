@@ -81,5 +81,12 @@
             <scope>compile</scope>
             <classifier>tests</classifier>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-test-utils</artifactId>
+            <version>${dep.flink.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
