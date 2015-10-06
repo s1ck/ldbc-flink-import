@@ -2,14 +2,22 @@
 
 ## ldbc-flink-import
 
-Used to load the output of [LDBC-SNB Data Generator](https://github.com/ldbc/ldbc_snb_datagen) into [Apache Flink](https://github.com/apache/flink).
-The data generator is designed to produce directed labeled graphs that mimic the characteristics of those graphs of real data. 
-A detailed description of the schema produced by the data generator, as well as the format of the output files, can be found in the latest
-version of official [LDBC-SNB specification document](https://github.com/ldbc/ldbc_snb_docs).
+Used to load the output of the [LDBC-SNB Data Generator](https://github.com/ldbc/ldbc_snb_datagen)
+into [Apache Flink](https://github.com/apache/flink) DataSets for further processing.
+The LDBC data generator is designed to produce directed labeled graphs that mimic the
+characteristics of those graphs of real data. A detailed description of the schema 
+produced by the data generator, as well as the format of the output files, can be 
+found in the latest version of the official [LDBC-SNB specification document](https://github.com/ldbc/ldbc_snb_docs).
 
-The tool reads the LDBC output files from a given directory (either local or HDFS) and creates two datasets containing all vertices and edges. Vertices
-and edges are represented by tuples. A vertex stores an id which is unique among all vertices, a vertex label and key-value properties. An edge stores 
-an id which is unique among all edges, an edge label, source and target vertex identifiers and key-value properties.
+![LDBC Schema](https://github.com/ldbc/ldbc_snb_docs/blob/master/tex/figures/schema/schema.png "LDBC Schema")
+https://github.com/ldbc/ldbc_snb_docs/blob/master/tex/figures/schema/schema.svg
+
+The tool reads the LDBC output files from a given directory (either local or HDFS)
+and creates two datasets containing all vertices and edges. Vertices and edges are
+represented by tuples. A vertex stores an id which is unique among all vertices,
+a vertex label and key-value properties represented by a HashMap. An edge stores
+an id which is unique among all edges, an edge label, source and target vertex 
+identifiers and key-value properties.
 
 ### Usage
 

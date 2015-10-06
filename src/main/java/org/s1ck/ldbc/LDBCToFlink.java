@@ -107,6 +107,15 @@ public class LDBCToFlink {
    */
   public LDBCToFlink(String ldbcDirectory, ExecutionEnvironment env,
     Configuration conf) {
+    if (ldbcDirectory == null || "".equals(ldbcDirectory)) {
+      throw new IllegalArgumentException("LDBC directory must not be null or empty");
+    }
+    if (env == null) {
+      throw new IllegalArgumentException("Flink Execution Environment must not be null");
+    }
+    if (conf == null) {
+      throw new IllegalArgumentException("Hadoop Configuration must not  be null");
+    }
     this.ldbcDirectory = ldbcDirectory;
     this.vertexFilePaths = Lists.newArrayList();
     this.edgeFilePaths = Lists.newArrayList();
@@ -434,7 +443,12 @@ public class LDBCToFlink {
   private void initFromHDFS() {
     try {
       FileSystem fs = FileSystem.get(conf);
-      FileStatus[] fileStates = fs.listStatus(new Path(ldbcDirectory));
+      Path p = new Path(ldbcDirectory);
+      if (!fs.exists(p) || !fs.isDirectory(p)) {
+        throw new IllegalArgumentException(
+          String.format("%s does not exist or is not a directory", ldbcDirectory));
+      }
+      FileStatus[] fileStates = fs.listStatus(p);
       for (FileStatus fileStatus : fileStates) {
         String filePath = fileStatus.getPath().getName();
         if (isVertexFile(filePath)) {
@@ -452,6 +466,10 @@ public class LDBCToFlink {
 
   private void initFromLocalFS() {
     File folder = new File(ldbcDirectory);
+    if (!folder.exists() || !folder.isDirectory()) {
+      throw new IllegalArgumentException(
+        String.format("%s does not exist or is not a directory", ldbcDirectory));
+    }
     for (final File fileEntry : folder.listFiles()) {
       if (isVertexFile(fileEntry.getName())) {
         vertexFilePaths.add(fileEntry.getAbsolutePath());
