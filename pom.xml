@@ -13,21 +13,11 @@
 
         <plugin.maven-compiler.version>3.0</plugin.maven-compiler.version>
 
-        <dep.flink.version>0.10-SNAPSHOT</dep.flink.version>
+        <dep.flink.version>0.10.0</dep.flink.version>
         <dep.hadoop.version>2.2.0</dep.hadoop.version>
         <dep.junit.version>4.12</dep.junit.version>
         <dep.log4j.version>1.2.17</dep.log4j.version>
     </properties>
-
-    <repositories>
-        <repository>
-            <id>apache.snapshots</id>
-            <name>Apache Development Snapshot Repository</name>
-            <url>https://repository.apache.org/content/repositories/snapshots/</url>
-            <releases><enabled>false</enabled></releases>
-            <snapshots><enabled>true</enabled></snapshots>
-        </repository>
-    </repositories>
 
     <build>
         <plugins>
