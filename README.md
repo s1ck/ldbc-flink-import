@@ -21,23 +21,27 @@ identifiers and key-value properties.
 
 ### Usage
 
-* Clone ldbc-flink-import into your local file system
-
-    > git clone https://github.com/s1ck/ldbc-flink-import
-    
-* Build and execute tests
-
-    > cd ldbc-flink-import
-    
-    > mvn clean install
-    
-* Add dependency to your maven project
+Add dependency to your maven project:
 
 ```
+<repositories>
+  <repository>
+    <id>dbleipzig</id>
+    <name>Database Group Leipzig University</name>
+    <url>https://wdiserv1.informatik.uni-leipzig.de:443/archiva/repository/dbleipzig/</url>
+    <releases>
+      <enabled>true</enabled>
+    </releases>
+    <snapshots>
+      <enabled>true</enabled>
+    </snapshots>
+   </repository>
+</repositories>
+
 <dependency>
-    <groupId>org.s1ck</groupId>
-    <artifactId>ldbc-flink-import</artifactId>
-    <version>0.1-SNAPSHOT</version>
+  <groupId>org.s1ck</groupId>
+  <artifactId>ldbc-flink-import</artifactId>
+  <version>0.1</version>
 </dependency>
 ```
 

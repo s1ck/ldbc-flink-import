@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.github.s1ck</groupId>
+    <groupId>org.s1ck</groupId>
     <artifactId>ldbc-flink-import</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.1</version>
     
     <name>ldbc-flink-import</name>
     <description>Used to load the output of the LDBC-SNB Data Generator into Apache Flink DataSets.</description>
@@ -47,7 +47,7 @@
 
         <plugin.maven-compiler.version>3.0</plugin.maven-compiler.version>
 
-        <dep.flink.version>0.10.0</dep.flink.version>
+        <dep.flink.version>0.10.1</dep.flink.version>
         <dep.hadoop.version>2.2.0</dep.hadoop.version>
         <dep.junit.version>4.12</dep.junit.version>
         <dep.log4j.version>1.2.17</dep.log4j.version>
