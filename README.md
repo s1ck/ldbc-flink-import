@@ -45,7 +45,7 @@ Add dependency to your maven project:
 </dependency>
 ```
 
-* Use in your project
+Use in your project
 
 ```java
 LDBCToFlink ldbcToFlink = new LDBCToFlink(
