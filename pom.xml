@@ -4,9 +4,43 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.s1ck</groupId>
+    <groupId>com.github.s1ck</groupId>
     <artifactId>ldbc-flink-import</artifactId>
     <version>0.1-SNAPSHOT</version>
+    
+    <name>ldbc-flink-import</name>
+    <description>Used to load the output of the LDBC-SNB Data Generator into Apache Flink DataSets.</description>
+    <url>http://github.com/s1ck/ldbc-flink-import.git</url>
+    
+    <licenses>
+        <license>
+            <name>GNU General Public License, Version 3</name>
+            <url>https://www.gnu.org/licenses/gpl.txt</url>
+        </license>
+    </licenses>
+    
+    <developers>
+        <developer>
+            <name>Martin Junghanns</name>
+            <email>m.junghanns@mailbox.org</email>
+            <organization>Leipzig University</organization>
+            <organizationUrl>http://dbs.uni-leipzig.de/</organizationUrl>
+            <id>s1ck</id>
+        </developer>
+    </developers>
+    
+    <scm>
+       <connection>scm:git:s1ck@github.com/s1ck/ldbc-flink-import.git</connection>
+       <developerConnection>scm:s1ck@github.com/s1ck/ldbc-flink-import.git</developerConnection>
+       <url>http://github.com/s1ck/ldbc-flink-import.git</url>
+    </scm>
+    
+    <distributionManagement>
+        <repository>
+            <id>dbleipzig</id>
+            <url>https://wdiserv1.informatik.uni-leipzig.de:443/archiva/repository/dbleipzig/</url>
+        </repository>
+    </distributionManagement>
 
     <properties>
         <project.build.targetJdk>1.7</project.build.targetJdk>
