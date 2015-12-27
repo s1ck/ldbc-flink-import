@@ -6,7 +6,7 @@
 
     <groupId>org.s1ck</groupId>
     <artifactId>ldbc-flink-import</artifactId>
-    <version>0.1</version>
+    <version>0.2-SNAPSHOT</version>
     
     <name>ldbc-flink-import</name>
     <description>Used to load the output of the LDBC-SNB Data Generator into Apache Flink DataSets.</description>
