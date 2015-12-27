@@ -48,7 +48,7 @@
         <plugin.maven-compiler.version>3.0</plugin.maven-compiler.version>
 
         <dep.flink.version>0.10.1</dep.flink.version>
-        <dep.hadoop.version>2.2.0</dep.hadoop.version>
+        <dep.hadoop.version>2.3.0</dep.hadoop.version>
         <dep.junit.version>4.12</dep.junit.version>
         <dep.log4j.version>1.2.17</dep.log4j.version>
     </properties>
@@ -94,7 +94,7 @@
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-common</artifactId>
             <version>${dep.hadoop.version}</version>
-            <scope>compile</scope>
+            <scope>test</scope>
             <type>test-jar</type>
         </dependency>
 
@@ -102,8 +102,8 @@
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-hdfs</artifactId>
             <version>${dep.hadoop.version}</version>
-            <scope>compile</scope>
             <classifier>tests</classifier>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
