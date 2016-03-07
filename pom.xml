@@ -47,7 +47,7 @@
 
         <plugin.maven-compiler.version>3.0</plugin.maven-compiler.version>
 
-        <dep.flink.version>0.10.1</dep.flink.version>
+        <dep.flink.version>1.0.0</dep.flink.version>
         <dep.hadoop.version>2.3.0</dep.hadoop.version>
         <dep.junit.version>4.12</dep.junit.version>
         <dep.log4j.version>1.2.17</dep.log4j.version>
@@ -71,7 +71,7 @@
         <!-- Flink -->
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-clients</artifactId>
+            <artifactId>flink-clients_2.11</artifactId>
             <version>${dep.flink.version}</version>
         </dependency>
 
@@ -108,7 +108,7 @@
 
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-test-utils</artifactId>
+            <artifactId>flink-test-utils_2.11</artifactId>
             <version>${dep.flink.version}</version>
             <scope>test</scope>
         </dependency>
