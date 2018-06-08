@@ -60,8 +60,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${plugin.maven-compiler.version}</version>
                 <configuration>
-                    <source>8</source>
-                    <target>8</target>
+                    <source>${project.build.targetJdk}</source>
+                    <target>${project.build.targetJdk}</target>
                 </configuration>
             </plugin>
         </plugins>
