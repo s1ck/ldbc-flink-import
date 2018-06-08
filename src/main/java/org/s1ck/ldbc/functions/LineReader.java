@@ -127,12 +127,10 @@ public abstract class LineReader<OUT> implements
       break;
     case DATETIME:
       DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-      dateTimeFormat.withZone(dateTimeFormat.getZone());
       o = LocalDateTime.parse(fieldValue, dateTimeFormat);
       break;
     case DATE:
       DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-      dateFormat.withZone(dateFormat.getZone());
       o = LocalDate.parse(fieldValue, dateFormat);
       break;
     default:
