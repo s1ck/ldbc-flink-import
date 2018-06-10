@@ -22,9 +22,10 @@ import org.s1ck.ldbc.LDBCConstants;
 import org.s1ck.ldbc.LDBCConstants.FieldType;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 import static org.s1ck.ldbc.LDBCConstants.TYPE_DISCRIMINATOR_FIELD;
@@ -50,10 +51,6 @@ public abstract class LineReader<OUT> implements
 
   private final Long vertexClassCount;
 
-  private final SimpleDateFormat dateTimeFormat;
-
-  private final SimpleDateFormat dateFormat;
-
   private final Map<String, Object> reuseMap;
 
   private int typeFieldIndex = -1;
@@ -69,10 +66,6 @@ public abstract class LineReader<OUT> implements
 
     fieldDelimiterPattern = Pattern.compile(LDBCConstants.FIELD_DELIMITER);
     reuseMap = Maps.newHashMapWithExpectedSize(classFields.length);
-    dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-    dateTimeFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-    dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 
     for (int i = 0; i < classFieldTypes.length; i++) {
       if (classFields[i].equals(TYPE_DISCRIMINATOR_FIELD)) {
@@ -133,10 +126,12 @@ public abstract class LineReader<OUT> implements
       o = Long.parseLong(fieldValue);
       break;
     case DATETIME:
-      o = dateTimeFormat.parse(fieldValue);
+      DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+      o = LocalDateTime.parse(fieldValue, dateTimeFormat);
       break;
     case DATE:
-      o = dateFormat.parse(fieldValue);
+      DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+      o = LocalDate.parse(fieldValue, dateFormat);
       break;
     default:
       o = fieldValue;

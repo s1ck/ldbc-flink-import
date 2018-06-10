@@ -43,7 +43,7 @@
     </distributionManagement>
 
     <properties>
-        <project.build.targetJdk>1.7</project.build.targetJdk>
+        <project.build.targetJdk>1.8</project.build.targetJdk>
 
         <plugin.maven-compiler.version>3.0</plugin.maven-compiler.version>
 
