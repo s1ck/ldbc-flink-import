@@ -41,7 +41,7 @@ Add dependency to your maven project:
 <dependency>
   <groupId>org.s1ck</groupId>
   <artifactId>ldbc-flink-import</artifactId>
-  <version>0.1</version>
+  <version>0.2-SNAPSHOT</version>
 </dependency>
 ```
 
