@@ -1,8 +1,8 @@
 package org.s1ck.ldbc;
 
+import com.google.common.collect.Lists;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.io.LocalCollectionOutputFormat;
-import org.apache.flink.hadoop.shaded.com.google.common.collect.Lists;
 import org.apache.flink.test.util.MultipleProgramsTestBase;
 import org.junit.Assert;
 import org.s1ck.ldbc.tuples.LDBCEdge;

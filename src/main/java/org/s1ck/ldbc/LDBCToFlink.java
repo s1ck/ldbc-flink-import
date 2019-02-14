@@ -16,13 +16,13 @@
 
 package org.s1ck.ldbc;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.utils.DataSetUtils;
-import org.apache.flink.hadoop.shaded.com.google.common.collect.Lists;
-import org.apache.flink.hadoop.shaded.com.google.common.collect.Maps;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;

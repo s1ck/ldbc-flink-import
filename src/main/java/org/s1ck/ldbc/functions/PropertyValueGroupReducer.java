@@ -16,8 +16,8 @@
 
 package org.s1ck.ldbc.functions;
 
+import com.google.common.collect.Lists;
 import org.apache.flink.api.common.functions.GroupReduceFunction;
-import org.apache.flink.hadoop.shaded.com.google.common.collect.Lists;
 import org.apache.flink.util.Collector;
 import org.s1ck.ldbc.tuples.LDBCMultiValuedProperty;
 import org.s1ck.ldbc.tuples.LDBCProperty;

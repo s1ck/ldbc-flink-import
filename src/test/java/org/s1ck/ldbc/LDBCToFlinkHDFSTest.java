@@ -1,25 +1,20 @@
 package org.s1ck.ldbc;
 
 import org.apache.flink.api.java.ExecutionEnvironment;
-import org.apache.flink.test.util.MultipleProgramsTestBase;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.HdfsConfiguration;
 import org.apache.hadoop.hdfs.MiniDFSCluster;
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.io.File;
-import java.io.IOException;
 
 @RunWith(Parameterized.class)
 public class LDBCToFlinkHDFSTest extends LDBCToFlinkTest {
@@ -40,7 +35,6 @@ public class LDBCToFlinkHDFSTest extends LDBCToFlinkTest {
 
   @BeforeClass
   public static void setup() throws Exception {
-    MultipleProgramsTestBase.setup();
     File clusterDir = tmpFolder.newFolder(CLUSTER_1);
     System.clearProperty(MiniDFSCluster.PROP_TEST_BUILD_DATA);
     conf = new HdfsConfiguration();
@@ -56,7 +50,6 @@ public class LDBCToFlinkHDFSTest extends LDBCToFlinkTest {
   @AfterClass
   public static void tearDown() throws Exception {
     cluster.shutdown();
-    MultipleProgramsTestBase.teardown();
   }
 
   @Test

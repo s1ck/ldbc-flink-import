@@ -16,8 +16,8 @@
 
 package org.s1ck.ldbc.functions;
 
+import com.google.common.collect.Maps;
 import org.apache.flink.api.common.functions.FlatMapFunction;
-import org.apache.flink.shaded.com.google.common.collect.Maps;
 import org.s1ck.ldbc.LDBCConstants;
 import org.s1ck.ldbc.LDBCConstants.FieldType;
 
