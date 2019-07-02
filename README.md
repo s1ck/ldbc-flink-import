@@ -9,8 +9,8 @@ characteristics of those graphs of real data. A detailed description of the sche
 produced by the data generator, as well as the format of the output files, can be 
 found in the latest version of the official [LDBC-SNB specification document](https://github.com/ldbc/ldbc_snb_docs).
 
-![LDBC Schema](https://github.com/ldbc/ldbc_snb_docs/blob/master/tex/figures/schema/schema.png "LDBC Schema")
-https://github.com/ldbc/ldbc_snb_docs/blob/master/tex/figures/schema/schema.svg
+![LDBC Schema](https://raw.githubusercontent.com/ldbc/ldbc_snb_docs/master/figures/schema.png "LDBC Schema")
+https://raw.githubusercontent.com/ldbc/ldbc_snb_docs/master/figures/schema.pdf
 
 The tool reads the LDBC output files from a given directory (either local or HDFS)
 and creates two datasets containing all vertices and edges. Vertices and edges are
