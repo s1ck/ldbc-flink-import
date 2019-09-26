@@ -41,7 +41,20 @@ Add dependency to your maven project:
 <dependency>
   <groupId>org.s1ck</groupId>
   <artifactId>ldbc-flink-import</artifactId>
-  <version>0.1</version>
+  <version>0.2-SNAPSHOT</version>
+</dependency>
+```
+You also need Apache Flink (version 1.7.0):
+```
+<dependency>
+    <groupId>org.apache.flink</groupId>
+    <artifactId>flink-java</artifactId>
+    <version>1.7.0</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.flink</groupId>
+    <artifactId>flink-clients_2.11</artifactId>
+    <version>1.7.0</version>
 </dependency>
 ```
 

@@ -16,8 +16,8 @@
 
 package org.s1ck.ldbc.functions;
 
+import com.google.common.collect.Iterables;
 import org.apache.flink.api.common.functions.CoGroupFunction;
-import org.apache.flink.hadoop.shaded.com.google.common.collect.Iterables;
 import org.apache.flink.util.Collector;
 import org.s1ck.ldbc.tuples.LDBCMultiValuedProperty;
 import org.s1ck.ldbc.tuples.LDBCVertex;
